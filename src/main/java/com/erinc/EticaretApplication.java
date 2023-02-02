@@ -1,6 +1,7 @@
 package com.erinc;
 
 import com.erinc.ornekcriteriakullanimi.CriteriaUsing;
+import com.erinc.repository.MusteriRepository;
 import com.erinc.repository.entity.ECinsiyet;
 import com.erinc.repository.entity.Musteri;
 import com.erinc.repository.entity.Urun;
@@ -33,8 +34,24 @@ public class EticaretApplication {
         //    System.out.println("****************************************");
         //});
         //cr.usingParameter("Erinc");
-        cr.usingPredicate();
-
+        //cr.usingPredicate();
+        //cr.groupBy();
+        //cr.findAllNativeQuery();
+        //cr.namedQueryFindAll();
+        //cr.namedQueryFindByAd("%h%");
+        //cr.namedQueryFindById(3l);
+        //cr.namedQueryFindById(100l);
+        //cr.namedQueryGetCount();
+        //cr.typedQuerySetProperties(1,3);
+        Musteri musteri = Musteri.builder()
+                .ad("Kahtali")
+                .soyad("Mici")
+                .adres("Holland")
+                .cinsiyet(ECinsiyet.ERKEK)
+                .build();
+        MusteriRepository musteriRepository = new MusteriRepository();
+        musteriRepository.save(musteri);
+        musteriRepository.findAllByColumnNameAndValue("ad","Kahtali");
 
 
     }

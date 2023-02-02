@@ -8,7 +8,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * önbellekleme yapabiliyor. Bu nedenle aynı sorgu tekrar çağırılır ise bellekten sonuç döner.
+ * Eğer query için dışarıdan parametre alacaksanız, parametre adını ve önüne : işareti koyunuz.
+ * select m from Musteri m where mad like :parametreninadi
+ */
+//@NamedQuery(name = "Musteri.findAll", query = "SELECT m from Musteri m")
+@NamedQueries({
+        @NamedQuery(name = "Musteri.findAll", query = "SELECT m from Musteri m"),
+        @NamedQuery(name = "Musteri.findByAd", query = "select m from Musteri m where lower(m.ad) like lower(:benbirmusteriadiistiyorum)"),
+        @NamedQuery(name = "Musteri.findById", query = "select m from Musteri m where m.id = :musteriid"),
+        @NamedQuery(name = "Musteri.getCount", query = "select COUNT(m) from Musteri m"),
+        @NamedQuery(name = "Musteri.findAllName", query = "select concat(m.ad,' ',m.soyad) from Musteri m "),
 
+})
 @Data
 @Builder
 @NoArgsConstructor

@@ -5,13 +5,16 @@ import com.erinc.repository.entity.Urun;
 import com.erinc.utility.HibernateUtility;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.hibernate.mapping.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class CriteriaUsing {
     private EntityManager entityManager;
@@ -139,6 +142,97 @@ public class CriteriaUsing {
 
 
     }
+
+    public void groupBy(){
+        CriteriaQuery<Tuple> criteria = builder.createQuery(Tuple.class);
+        Root<Musteri> root = criteria.from(Musteri.class);
+
+        criteria.groupBy(root.get("ad"));
+        criteria.multiselect(root.get("ad"),builder.count(root));
+
+        List<Tuple> list = entityManager.createQuery(criteria).getResultList();
+
+        list.forEach(x->{
+            System.out.println("ad....: "+ x.get(0) + " -> "+ x.get(1));
+        });
+    }
+
+    public void findAllNativeQuery(){
+        /**
+         * Buraya kadar;
+         * Java Persistence API üzerinden hibernate ile SQL sorgularını hazırlayıp çalıştırdık.
+         * Tüm ORM araçlarında kullanılan yapıların yetersiz kalabileceği durumlar olabilir yada
+         * yazılan kodlar karmaşıklaşarak odaktan uzaklaşmaya neden olabilir.
+         * Bütün bu sebeplerden dolayı, belli sorgularda ham SQL komutları çalıştırmak isteyebiliriz.
+         *
+         *
+         */
+        List<Object[]> mlist = entityManager.createNativeQuery("select id,musteriad,soyad,email,cinsiyet from tblmusteri").getResultList();
+        mlist.forEach(x->{
+            System.out.println(Arrays.asList(x).get(0) + " - " +Arrays.asList(x).get(1));
+        });
+
+
+
+
+    }
+
+    public void namedQueryFindAll(){
+        TypedQuery<Musteri> result = entityManager.createNamedQuery("Musteri.findAll", Musteri.class);
+        List<Musteri> mlist = result.getResultList();
+        mlist.forEach(x->{
+            System.out.println(x.getId()+" "+x.getAd());
+        });
+    }
+
+    /**
+     * Musteri adına göre arama yapan method'dur.
+     * musteri adını verirken, filtrelemek için % karakteri kullanılır.
+     */
+    public void namedQueryFindByAd(String ad){
+        TypedQuery<Musteri> typedQuery = entityManager.createNamedQuery("Musteri.findByAd", Musteri.class);
+        typedQuery.setParameter("benbirmusteriadiistiyorum",ad);
+        List<Musteri> musteriList = typedQuery.getResultList();
+        musteriList.forEach(x->{
+            System.out.println(x.getId()+" -> "+ x.getAd() + " "+ x.getSoyad());
+        });
+    }
+
+    public void namedQueryFindById(Long id){
+        TypedQuery<Musteri>typedQuery =
+                entityManager.createNamedQuery("Musteri.findById", Musteri.class);
+        typedQuery.setParameter("musteriid", id);
+        Optional<Musteri> result;
+        try{
+            Musteri musteri = typedQuery.getSingleResult();
+            result = Optional.of(musteri);
+        }catch(Exception e){
+            System.out.println("Hata vaaaar..... : " + e.toString());
+            result = Optional.empty();
+        }
+        if (result.isPresent())
+        System.out.println(result.get().getId()+" --> "+ result.get().getAd()+" - "+result.get().getSoyad());
+    }
+
+    public void namedQueryGetCount(){
+        TypedQuery<Long> typedQuery = entityManager.createNamedQuery("Musteri.getCount", Long.class);
+        Long count = typedQuery.getSingleResult();
+        System.out.println("Musteri sayısı....: "+ count);
+    }
+
+    public void typedQuerySetProperties(int page, int count){
+        /**
+         * Pagination -> sayfalama
+         */
+        TypedQuery<Musteri> typedQuery = entityManager.createNamedQuery("Musteri.findAll",Musteri.class);
+        typedQuery.setMaxResults(count);
+        typedQuery.setFirstResult(page*count);
+        List<Musteri> musteriList = typedQuery.getResultList();
+        musteriList.forEach(x->{
+            System.out.println(x.getId()+" "+x.getAd());
+        });
+    }
+
 
 
 
