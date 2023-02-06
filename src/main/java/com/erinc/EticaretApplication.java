@@ -20,8 +20,30 @@ import java.util.List;
 
 public class EticaretApplication {
     public static void main(String[] args) {
-    //save
-    //list();
+
+        MusteriRepository musteriRepository = new MusteriRepository();
+        musteriRepository.findByEntity(Musteri.builder().soyad("T").build()).forEach(x->{
+            System.out.println("Musteri adi...: "+ x.getAd()+" "+ x.getSoyad());
+        });
+
+
+        /*musteriRepository.save(Musteri.builder()
+                        .ad("Nil")
+                        .soyad("UTKU")
+                        .cinsiyet(ECinsiyet.KADIN)
+                .build());
+
+        musteriRepository.findAll().forEach(x->{
+            System.out.println("Musteri adi...: "+ x.getAd()+" "+ x.getSoyad());
+        });*/
+
+
+    }
+
+
+    private static void testmain(){
+        //save
+        //list();
         CriteriaUsing cr = new CriteriaUsing();
         //cr.findAll();
         //cr.selectOneColumn();
@@ -52,9 +74,8 @@ public class EticaretApplication {
         MusteriRepository musteriRepository = new MusteriRepository();
         musteriRepository.save(musteri);
         musteriRepository.findAllByColumnNameAndValue("ad","Kahtali");
-
-
     }
+
 
     private static void criteriaList(){
         EntityManager entityManager = HibernateUtility.getSessionFactory().createEntityManager();
